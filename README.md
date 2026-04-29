@@ -6,7 +6,7 @@ A high-quality, realistic banking demo web application built with **React + Vite
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Prerequisitess
 - [Node.js](https://nodejs.org/) version **18 or higher**
 - npm (comes with Node.js)
 
