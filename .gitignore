@@ -1,23 +1,6 @@
-node_modules/
-dist/
-.vercel/
-
+node_modules
+dist
 .env
-.env.*
-!.env.example
-
+.env.local
 .DS_Store
-Thumbs.db
 *.local
-*.log
-
-# Editor / OS
-.vscode/
-.idea/
-
-# ------------------------------------------------------------
-# TEMP MODE: hide almost everything from NEW git adds
-# To enable, uncomment the 2 lines below:
-# *
-# !.gitignore
-# ------------------------------------------------------------
