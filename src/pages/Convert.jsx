@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 
 const CURRENCIES = [
@@ -30,14 +31,15 @@ function convertAmount(amount, from, to) {
 
 export default function Convert() {
   const { addNotification } = useApp()
+  const navigate = useNavigate()
   const [amount, setAmount] = useState('')
   const [fromCurrency, setFromCurrency] = useState('GBP')
   const [toCurrency, setToCurrency] = useState('EUR')
   const [result, setResult] = useState(null)
-  const [eurUnlocked, setEurUnlocked] = useState(false)
+  const [showSupportPrompt, setShowSupportPrompt] = useState(false)
 
   const isGbpToEur = fromCurrency === 'GBP' && toCurrency === 'EUR'
-  const isLocked = isGbpToEur && !eurUnlocked
+  const isLocked = isGbpToEur
 
   const fromMeta = CURRENCIES.find(c => c.code === fromCurrency)
   const toMeta = CURRENCIES.find(c => c.code === toCurrency)
@@ -46,11 +48,12 @@ export default function Convert() {
     setFromCurrency(toCurrency)
     setToCurrency(fromCurrency)
     setResult(null)
+    setShowSupportPrompt(false)
   }
 
   const handleUnlock = () => {
-    setEurUnlocked(true)
-    addNotification('GBP to EUR conversion unlocked', 'success')
+    setShowSupportPrompt(true)
+    addNotification('Please contact support for assistance', 'info')
   }
 
   const handleConvert = (e) => {
@@ -99,7 +102,7 @@ export default function Convert() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">From</label>
             <select
               value={fromCurrency}
-              onChange={e => { setFromCurrency(e.target.value); setResult(null) }}
+              onChange={e => { setFromCurrency(e.target.value); setResult(null); setShowSupportPrompt(false) }}
               className="input-field"
             >
               {CURRENCIES.map(c => (
@@ -123,7 +126,7 @@ export default function Convert() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">To</label>
             <select
               value={toCurrency}
-              onChange={e => { setToCurrency(e.target.value); setResult(null) }}
+              onChange={e => { setToCurrency(e.target.value); setResult(null); setShowSupportPrompt(false) }}
               className="input-field"
             >
               {CURRENCIES.map(c => (
@@ -137,21 +140,27 @@ export default function Convert() {
           <div className="rounded-2xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 p-5 text-center">
             <div className="text-3xl mb-2">🔒</div>
             <p className="font-display font-semibold text-amber-900 dark:text-amber-200">GBP to EUR is locked</p>
-            <p className="text-sm text-amber-700 dark:text-amber-400 mt-1 mb-4">Unlock this conversion to continue</p>
-            <button
-              type="button"
-              onClick={handleUnlock}
-              className="btn-primary w-full sm:w-auto px-8"
-            >
-              Unlock 🔓
-            </button>
-          </div>
-        )}
-
-        {isGbpToEur && eurUnlocked && (
-          <div className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-xl px-4 py-3">
-            <span>🔓</span>
-            <span className="font-medium">GBP to EUR conversion unlocked</span>
+            <p className="text-sm text-amber-700 dark:text-amber-400 mt-1 mb-4">Tap unlock to request access</p>
+            {showSupportPrompt ? (
+              <div className="space-y-3 animate-fade-in">
+                <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Please contact support for assistance</p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/support')}
+                  className="btn-primary w-full sm:w-auto px-8"
+                >
+                  Go to Support
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleUnlock}
+                className="btn-primary w-full sm:w-auto px-8"
+              >
+                Unlock 🔓
+              </button>
+            )}
           </div>
         )}
 
