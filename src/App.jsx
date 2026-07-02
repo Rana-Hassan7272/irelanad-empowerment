@@ -8,6 +8,7 @@ import Payees from './pages/Payees'
 import DebitCard from './pages/DebitCard'
 import Support from './pages/Support'
 import Transactions from './pages/Transactions'
+import Convert from './pages/Convert'
 import Settings from './pages/Settings'
 import Notifications from './components/Notifications'
 import Layout from './components/Layout'
@@ -31,6 +32,7 @@ function AppRoutes() {
           <Route path="debit-card" element={<DebitCard />} />
           <Route path="support" element={<Support />} />
           <Route path="transactions" element={<Transactions />} />
+          <Route path="convert" element={<Convert />} />
           <Route path="settings" element={<Settings />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
