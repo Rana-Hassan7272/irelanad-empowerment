@@ -1,6 +1,6 @@
 # 🏦 Ireland Empowerment Benefit — Banking Demo App
 
-A high-quality, realistic banking demo web application built with **React + Vite + Tailwind CSS**.
+A high-quality, realistic banking demo web application built with **Reactr + Vite + Tailwind CSS**.
 
 ---
 
