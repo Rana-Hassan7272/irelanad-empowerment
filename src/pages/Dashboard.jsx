@@ -3,6 +3,19 @@ import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import IrelandFlag from '../components/IrelandFlag'
 
+function getTimeGreeting(timeZone = 'Europe/Dublin') {
+  const hour = Number(
+    new Intl.DateTimeFormat('en-GB', {
+      timeZone,
+      hour: 'numeric',
+      hour12: false,
+    }).format(new Date())
+  )
+  if (hour < 12) return 'morning'
+  if (hour < 18) return 'afternoon'
+  return 'evening'
+}
+
 function AnimatedBalance({ value }) {
   const [displayed, setDisplayed] = useState(0)
   useEffect(() => {
@@ -31,9 +44,16 @@ function AnimatedBalance({ value }) {
 }
 
 export default function Dashboard() {
-  const { user, transactions } = useApp()
+  const { user, transactions, verificationRestricted } = useApp()
   const navigate = useNavigate()
-  const now = new Date()
+  const [greeting, setGreeting] = useState(() => getTimeGreeting())
+
+  useEffect(() => {
+    const updateGreeting = () => setGreeting(getTimeGreeting())
+    updateGreeting()
+    const interval = setInterval(updateGreeting, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   const quickActions = [
     {
@@ -83,7 +103,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Good {now.getHours() < 12 ? 'morning' : now.getHours() < 18 ? 'afternoon' : 'evening'},</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">Good {greeting},</p>
           <h1 className="font-display text-2xl font-bold text-gray-900 dark:text-white">{user.shortName}</h1>
         </div>
         <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-3 py-2 shadow-sm">
@@ -91,6 +111,26 @@ export default function Dashboard() {
           <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 hidden sm:block">IEB Banking</span>
         </div>
       </div>
+
+      {verificationRestricted && (
+        <div className="flex items-center gap-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-2xl p-4 shadow-sm">
+          <div className="w-11 h-11 bg-red-100 dark:bg-red-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-red-800 dark:text-red-300 text-sm">Account Restricted</p>
+            <p className="text-red-700 dark:text-red-400 text-sm mt-0.5">Complete the verification</p>
+          </div>
+          <button
+            onClick={() => navigate('/support')}
+            className="flex-shrink-0 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 uppercase tracking-wide"
+          >
+            FIX NOW
+          </button>
+        </div>
+      )}
 
       {/* Balance Card */}
       <div className="bank-card-gradient rounded-3xl p-6 sm:p-8 text-white shadow-card relative overflow-hidden">
@@ -101,11 +141,26 @@ export default function Dashboard() {
 
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
-            <div>
+            <div className="flex-1">
               <p className="text-emerald-200/80 text-xs font-medium uppercase tracking-widest mb-1">Total Balance</p>
-              <div className="font-display text-4xl sm:text-5xl font-bold tracking-tight">
+              <div className={`font-display text-4xl sm:text-5xl font-bold tracking-tight ${verificationRestricted ? 'opacity-50' : ''}`}>
                 <AnimatedBalance value={user.balance} />
               </div>
+              {verificationRestricted && (
+                <div className="mt-3 space-y-1.5">
+                  <div className="inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-400/30 rounded-lg px-2.5 py-1">
+                    <svg className="w-3.5 h-3.5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span className="text-amber-200 text-xs font-semibold">Funds on Hold</span>
+                  </div>
+                  <p className="text-white/60 text-xs">
+                    Available: <span className="text-white font-semibold">£0.00</span>
+                    <span className="mx-1.5">·</span>
+                    Held: <span className="text-amber-300 font-semibold">£{user.balance.toLocaleString('en-GB')}</span>
+                  </p>
+                </div>
+              )}
             </div>
             <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-3">
               <IrelandFlag size={36} />
@@ -162,12 +217,16 @@ export default function Dashboard() {
             { label: 'IBAN', value: user.iban },
             { label: 'Sort Code', value: user.sortCode },
             { label: 'Bank', value: 'Ireland Empowerment Benefit' },
-            { label: 'Account Status', value: 'Active', badge: true },
+            { label: 'Account Status', value: verificationRestricted ? 'Restricted' : 'Active', badge: true, restricted: verificationRestricted },
           ].map(item => (
             <div key={item.label} className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-gray-700/50 last:border-0">
               <span className="text-sm text-gray-500 dark:text-gray-400">{item.label}</span>
               {item.badge ? (
-                <span className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  item.restricted
+                    ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                    : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                }`}>
                   {item.value}
                 </span>
               ) : (

@@ -17,6 +17,8 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
 
+  const verificationRestricted = true
+
   const user = {
     name: 'Mr Desmond Mohan',
     shortName: 'Mr Desmond',
@@ -86,7 +88,7 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider value={{
       isAuthenticated, user, transactions, payees,
-      notifications, loading, darkMode,
+      notifications, loading, darkMode, verificationRestricted,
       login, logout, addPayee, addNotification, submitWithdrawal,
       toggleDarkMode: () => setDarkMode(d => !d),
     }}>
