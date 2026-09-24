@@ -17,7 +17,7 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
 
-  const verificationRestricted = true
+  const verificationRestricted = false
 
   const user = {
     name: 'Mr Desmond Mohan',
