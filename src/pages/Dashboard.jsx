@@ -242,27 +242,52 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display font-semibold text-gray-800 dark:text-gray-200">Recent Transactions</h2>
           <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-full">
-            {transactions.length} transaction
+            {transactions.length} transactions
           </span>
         </div>
         <div className="space-y-2">
-          {transactions.map(tx => (
-            <div key={tx.id} className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/30 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-colors">
-              <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 4v8m0 0l4-4m-4 4l-4-4" />
-                </svg>
+          {[...transactions].sort((a, b) => new Date(b.date) - new Date(a.date)).map(tx => {
+            const symbol = tx.currency === 'EUR' ? '€' : '£'
+            const isCredit = tx.type === 'credit'
+            const isFailed = tx.status === 'failed'
+            return (
+              <div key={tx.id} className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/30 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-colors">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  isFailed
+                    ? 'bg-gray-100 dark:bg-gray-700/50'
+                    : isCredit
+                      ? 'bg-emerald-100 dark:bg-emerald-900/40'
+                      : 'bg-red-100 dark:bg-red-900/40'
+                }`}>
+                  {isCredit ? (
+                    <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 4v8m0 0l4-4m-4 4l-4-4" />
+                    </svg>
+                  ) : (
+                    <svg className={`w-5 h-5 ${isFailed ? 'text-gray-400' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{tx.description}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{tx.reference} · {new Date(tx.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className={`text-sm font-bold ${
+                    isFailed
+                      ? 'text-gray-400 line-through'
+                      : isCredit
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : 'text-red-500'
+                  }`}>
+                    {isCredit ? '+' : '-'}{symbol}{tx.amount.toLocaleString('en-GB')}
+                  </p>
+                  <p className={`text-xs capitalize ${isFailed ? 'text-red-500' : 'text-gray-400'}`}>{tx.status}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{tx.description}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">{tx.reference} · {new Date(tx.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
-              </div>
-              <div className="text-right flex-shrink-0">
-                <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">+£{tx.amount.toLocaleString('en-GB')}</p>
-                <p className="text-xs text-gray-400 capitalize">{tx.status}</p>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>
