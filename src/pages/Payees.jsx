@@ -86,7 +86,7 @@ export default function Payees() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Full Name <span className="text-red-400">*</span></label>
-              <input name="name" value={form.name} onChange={handleChange} className={`input-field ${errors.name ? 'border-red-400 focus:ring-red-400' : ''}`} placeholder="e.g. John Murphy" disabled={loading} />
+              <input name="name" value={form.name} onChange={handleChange} className={`input-field ${errors.name ? 'border-red-400 focus:ring-red-400' : ''}`} placeholder="e.g. Desmond Mohan" disabled={loading} />
               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
             <div>
@@ -136,17 +136,59 @@ export default function Payees() {
           </div>
           <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
             {payees.map((p, i) => (
-              <div key={p.id} className="flex items-center gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors">
-                <div className={`w-10 h-10 ${bankColors[i % bankColors.length]} dark:opacity-80 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0`}>
-                  {initials(p.name)}
+              <div key={p.id} className="px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors">
+                <div className="flex items-center gap-4 mb-3">
+                  <div className={`w-10 h-10 ${bankColors[i % bankColors.length]} dark:opacity-80 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0`}>
+                    {initials(p.name)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{p.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{p.accountType || p.bank}</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{p.name}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{p.bank} · {p.accountNumber}</p>
+                <div className="ml-14 space-y-2">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Recipient Account Details</p>
+                  <div className="grid grid-cols-1 gap-1.5 text-xs">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-gray-400">Account Holder Name</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200 text-right">{p.name}</span>
+                    </div>
+                    {p.accountType && (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">Account Type</span>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 text-right">{p.accountType}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between gap-3">
+                      <span className="text-gray-400">Account Number</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200 font-mono text-right">{p.accountNumber}</span>
+                    </div>
+                    {p.sortCode && (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">Bank Sort Code</span>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 font-mono text-right">{p.sortCode}</span>
+                      </div>
+                    )}
+                    {p.bic && (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">Bank ID (BIC)</span>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 font-mono text-right">{p.bic}</span>
+                      </div>
+                    )}
+                    {p.iban && (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">IBAN</span>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 font-mono text-right break-all">{p.iban}</span>
+                      </div>
+                    )}
+                    {!p.iban && p.bank && (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-gray-400">Bank</span>
+                        <span className="font-semibold text-gray-800 dark:text-gray-200 text-right">{p.bank}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <svg className="w-4 h-4 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
               </div>
             ))}
           </div>

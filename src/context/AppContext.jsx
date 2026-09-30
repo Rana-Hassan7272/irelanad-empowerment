@@ -12,7 +12,16 @@ export function AppProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [darkMode, setDarkMode] = useState(false)
   const [payees, setPayees] = useState([
-    { id: 1, name: 'John Murphy', accountNumber: '12345678', bank: 'Permanent TSB (PTSB)' }
+    {
+      id: 1,
+      name: 'Desmond Mohan',
+      accountType: 'Business Current Account',
+      accountNumber: '35387104',
+      sortCode: '990613',
+      bic: 'IPBSIE2D',
+      iban: 'IE49IPBS99061335387104',
+      bank: 'IPBS',
+    }
   ])
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
