@@ -250,21 +250,29 @@ export default function Dashboard() {
             const symbol = tx.currency === 'EUR' ? '€' : '£'
             const isCredit = tx.type === 'credit'
             const isFailed = tx.status === 'failed'
+            const isProcessing = tx.status === 'processing'
             return (
-              <div key={tx.id} className="flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/30 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-colors">
+              <button
+                key={tx.id}
+                type="button"
+                onClick={() => navigate('/transactions', { state: { txId: tx.id } })}
+                className="w-full flex items-center gap-4 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/30 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-colors text-left"
+              >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
                   isFailed
                     ? 'bg-gray-100 dark:bg-gray-700/50'
-                    : isCredit
-                      ? 'bg-emerald-100 dark:bg-emerald-900/40'
-                      : 'bg-red-100 dark:bg-red-900/40'
+                    : isProcessing
+                      ? 'bg-amber-100 dark:bg-amber-900/40'
+                      : isCredit
+                        ? 'bg-emerald-100 dark:bg-emerald-900/40'
+                        : 'bg-red-100 dark:bg-red-900/40'
                 }`}>
                   {isCredit ? (
                     <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 4v8m0 0l4-4m-4 4l-4-4" />
                     </svg>
                   ) : (
-                    <svg className={`w-5 h-5 ${isFailed ? 'text-gray-400' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`w-5 h-5 ${isFailed ? 'text-gray-400' : isProcessing ? 'text-amber-600 dark:text-amber-400' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   )}
@@ -277,15 +285,17 @@ export default function Dashboard() {
                   <p className={`text-sm font-bold ${
                     isFailed
                       ? 'text-gray-400 line-through'
-                      : isCredit
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-500'
+                      : isProcessing
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : isCredit
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-red-500'
                   }`}>
                     {isCredit ? '+' : '-'}{symbol}{tx.amount.toLocaleString('en-GB')}
                   </p>
-                  <p className={`text-xs capitalize ${isFailed ? 'text-red-500' : 'text-gray-400'}`}>{tx.status}</p>
+                  <p className={`text-xs capitalize ${isFailed ? 'text-red-500' : isProcessing ? 'text-amber-600' : 'text-gray-400'}`}>{tx.status}</p>
                 </div>
-              </div>
+              </button>
             )
           })}
         </div>
