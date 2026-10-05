@@ -100,7 +100,7 @@ export function AppProvider({ children }) {
     },
     {
       id: 6,
-      description: 'Withdrawal Processing',
+      description: 'Withdrawal Failed',
       amount: 10000,
       type: 'debit',
       currency: 'EUR',
@@ -108,8 +108,8 @@ export function AppProvider({ children }) {
       reference: 'WD/IEB/2026/005',
       from: 'Mr Desmond Mohan',
       to: 'Desmond Mohan',
-      status: 'processing',
-      message: 'This payment may take up to 48 hours to complete the transaction.',
+      status: 'failed',
+      message: 'This withdrawal could not be completed.',
       payee: {
         name: 'Desmond Mohan',
         accountType: 'Business Current Account',
@@ -121,7 +121,7 @@ export function AppProvider({ children }) {
     },
     {
       id: 7,
-      description: 'Withdrawal Processing',
+      description: 'Withdrawal Failed',
       amount: 10000,
       type: 'debit',
       currency: 'EUR',
@@ -129,8 +129,8 @@ export function AppProvider({ children }) {
       reference: 'WD/IEB/2026/006',
       from: 'Mr Desmond Mohan',
       to: 'Desmond Mohan',
-      status: 'processing',
-      message: 'This payment may take up to 48 hours to complete the transaction.',
+      status: 'failed',
+      message: 'This withdrawal could not be completed.',
       payee: {
         name: 'Desmond Mohan',
         accountType: 'Business Current Account',
